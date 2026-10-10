@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#101820">
+<title>iPad Air FOH 10 路音控台</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:#101820;color:#edf4f8;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+body{min-height:100vh}
+button,input,select{font:inherit}
+.top{background:#080e13;border-bottom:1px solid #2b3c49;padding:12px 14px;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{font-size:22px;font-weight:800;letter-spacing:1px;color:#00e5d0}
+.subtitle{font-size:11px;color:#9eb0bd;margin-top:3px}
+.controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+button{border:1px solid #435562;background:#263744;color:#f4f8fb;border-radius:7px;padding:9px 11px;min-height:38px}
+button:active{opacity:.75}
+button.primary{background:#00c9b4;border-color:#00c9b4;color:#071714;font-weight:700}
+button.stop{background:#743b4a;border-color:#985163}
+button.active{background:#ffb347;color:#1d1304;border-color:#ffb347}
+.status{font-size:12px;color:#ffca77;padding-top:8px;min-height:24px}
+.master{margin:12px;background:#1b2934;border:1px solid #344956;border-radius:12px;padding:12px}
+.section-title{font-weight:800;font-size:13px;letter-spacing:.7px;margin-bottom:10px}
+.master-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.master-level{font-size:12px;color:#a9bbc7;min-width:70px}
+.master input[type=range]{flex:1;min-width:150px}
+.meter{height:10px;background:#071017;border:1px solid #3b4e5b;border-radius:4px;overflow:hidden;min-width:70px;flex:1}
+.meter>span{display:block;width:0%;height:100%;background:linear-gradient(to right,#19d78b 0%,#c8e642 72%,#ff5367 92%)}
+#channels{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:2px 12px 16px;scrollbar-width:thin;-webkit-overflow-scrolling:touch;align-items:stretch}
+.strip{flex:0 0 132px;width:132px;background:#1b2833;border:1px solid #354957;border-radius:10px;padding:9px 8px 10px;min-height:470px;display:flex;flex-direction:column;align-items:stretch}
+.strip.mic{border-color:#00a99b;background:#1b3036}
+.ch-name{text-align:center;font-size:13px;font-weight:800;white-space:nowrap;color:#dff8f5}
+.ch-sub{height:30px;text-align:center;font-size:10px;line-height:1.35;color:#a7b8c4;overflow:hidden;margin:5px 0}
+.filepick{font-size:10px;padding:7px 4px;width:100%;white-space:normal;min-height:35px}
+.fileinput{display:none}
+.trackname{font-size:10px;color:#d6e2e9;min-height:28px;max-height:36px;overflow:hidden;text-align:center;margin:5px 0}
+.transport{display:flex;gap:4px}
+.transport button{flex:1;padding:7px 2px;min-height:34px;font-size:12px}
+.vu{height:8px;background:#081017;border-radius:3px;margin:8px 2px 3px;overflow:hidden}
+.vu span{display:block;width:0%;height:100%;background:linear-gradient(to right,#21d58b,#d8e84b 75%,#ff5266)}
+.db{text-align:center;color:#9eafbd;font-size:10px;height:14px}
+.faderbox{height:170px;display:flex;align-items:center;justify-content:center;margin:3px 0}
+.fader{height:160px;width:36px;writing-mode:vertical-lr;direction:rtl;-webkit-appearance:slider-vertical;appearance:slider-vertical;touch-action:pan-y}
+.gainvalue{text-align:center;font-size:11px;color:#00e5d0;font-weight:700;margin-top:2px}
+.panlabel{display:flex;justify-content:space-between;font-size:9px;color:#91a5b2;margin:7px 1px 0}
+.pan{width:100%;margin:0}
+.buttons{display:flex;gap:5px;margin-top:9px}
+.buttons button{flex:1;padding:6px 2px;font-size:11px;min-height:33px;font-weight:700}
+.buttons .mute-on{background:#ffb347;color:#241700;border-color:#ffb347}
+.buttons .solo-on{background:#00c9b4;color:#071714;border-color:#00c9b4}
+.state{text-align:center;font-size:10px;color:#9eafbd;margin-top:8px;min-height:14px}
+.footer{padding:10px 14px 20px;color:#879ba8;font-size:11px;line-height:1.6}
+.note{background:#18252e;border:1px solid #30424d;border-radius:9px;padding:10px;margin:10px 12px}
+a{color:#00e5d0}
+@media(min-width:800px){.strip{flex-basis:145px;width:145px}.top{padding-left:20px;padding-right:20px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div><div class="logo">FOH <span style="color:#f4f8fb">LIVE</span></div><div class="subtitle">1 MIC + 10 PLAYBACK → CHANNEL MIX → MASTER BUS → MAIN L/R</div></div>
+    <div style="font-size:11px;color:#9eb0bd">iPad Air · iOS 12.5.8 相容設計</div>
+  </div>
+  <div class="controls">
+    <button class="primary" id="startAudio">啟動音訊引擎</button>
+    <button id="micButton">開啟 MIC</button>
+    <button id="stopAll">全部停止</button>
+    <button id="allMute">全部靜音</button>
+  </div>
+  <div class="status" id="status">待機中。請先點「啟動音訊引擎」，再載入音樂。</div>
+</header>
+
+<section class="master">
+  <div class="section-title">MASTER BUS / MAIN L/R</div>
+  <div class="master-row">
+    <div class="master-level">MASTER <b id="masterText">85%</b></div>
+    <input id="masterGain" type="range" min="0" max="1" step="0.01" value="0.85" aria-label="主輸出音量">
+    <div class="meter"><span id="masterMeter"></span></div>
+    <div class="master-level">L/R STEREO</div>
+  </div>
+  <div style="font-size:10px;color:#9eb0bd;margin-top:8px">主輸出電平為網頁內部估算值；請先將實體音量調低再測試。</div>
+</section>
+
+<div class="note" style="font-size:11px;line-height:1.5;color:#b7c8d2">
+  <b style="color:#00e5d0">使用方式：</b>每路選擇一個本機音訊檔（建議 MP3、AAC、WAV），可同時播放多路。第一次使用需點按鈕啟動音訊；MIC 需允許 Safari 使用麥克風。iOS 12 對格式及同時播放能力可能有限，請先用短音檔測試。
+</div>
+
+<div id="channels" aria-label="音控台通道"></div>
+
+<div class="footer">
+  <b style="color:#d9e6ed">安全與相容性</b><br>
+  • 麥克風功能需從 HTTPS 網站開啟並允許麥克風權限。<br>
+  • 此網頁只處理送入 iPad 的麥克風訊號與本機音樂，不會控制實體音訊介面的 48V、PAD 或硬體旋鈕。<br>
+  • 請勿將 iPad 喇叭音量直接開大測試麥克風，以免產生回授；現場建議使用耳機或正確配置的外接音訊介面。<br>
+  • 網頁關閉或切換到背景後，iOS 可能暫停播放；這是系統限制。
+</div>
+
+<script>
+(function(){
+"use strict";
+var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+var audioCtx = null, masterNode = null, masterAnalyser = null, micStream = null, micSource = null;
+var channels = [], masterGain = 0.85, micEnabled = false, allMuted = false;
+var statusEl = document.getElementById("status");
+var channelRoot = document.getElementById("channels");
+var masterMeter = document.getElementById("masterMeter");
+var masterText = document.getElementById("masterText");
+var masterSlider = document.getElementById("masterGain");
+
+function setStatus(msg){ statusEl.textContent = msg; }
+function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
+function make(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+function createAudioEngine(){
+  if(!AudioContextClass){setStatus("此 Safari 不支援 Web Audio API，請更新系統或改用相容裝置。");return false;}
+  if(audioCtx){if(audioCtx.state==="suspended" && audioCtx.resume){audioCtx.resume();}return true;}
+  try{
+    audioCtx=new AudioContextClass();
+    masterNode=audioCtx.createGain();
+    masterNode.gain.value=masterGain;
+    masterAnalyser=audioCtx.createAnalyser();
+    masterAnalyser.fftSize=256;
+    masterNode.connect(masterAnalyser);
+    masterAnalyser.connect(audioCtx.destination);
+    channels.forEach(function(ch){setupChannelNodes(ch);});
+    setStatus("音訊引擎已啟動。可載入 10 路音樂，並按「開啟 MIC」啟用麥克風。");
+    return true;
+  }catch(e){setStatus("啟動失敗："+e.message);return false;}
+}
+function setupChannelNodes(ch){
+  if(!audioCtx || ch.nodesReady)return;
+  ch.gainNode=audioCtx.createGain();
+  ch.gainNode.gain.value=ch.gain;
+  ch.analyser=audioCtx.createAnalyser();ch.analyser.fftSize=256;
+  ch.panNode=null;
+  if(audioCtx.createStereoPanner){
+    ch.panNode=audioCtx.createStereoPanner();
+    ch.panNode.pan.value=ch.pan;
+    ch.gainNode.connect(ch.panNode);ch.panNode.connect(ch.analyser);
+  }else{
+    ch.panNode=audioCtx.createPanner();
+    ch.panNode.panningModel="equalpower";
+    ch.panNode.setPosition(ch.pan,0,1-Math.abs(ch.pan));
+    ch.gainNode.connect(ch.panNode);ch.panNode.connect(ch.analyser);
+  }
+  ch.analyser.connect(masterNode);
+  ch.nodesReady=true;
+  if(ch.audio && ch.audio.src && !ch.mediaSource){
+    try{ch.mediaSource=audioCtx.createMediaElementSource(ch.audio);ch.mediaSource.connect(ch.gainNode);}catch(e){}
+  }
+}
+function makeStrip(ch,index,isMic){
+  var strip=make("div","strip"+(isMic?" mic":""));
+  var title=make("div","ch-name",isMic?"MIC 1":"PLAY "+("0"+index).slice(-2));
+  var sub=make("div","ch-sub",isMic?"LIVE INPUT":"音樂播放通道");
+  strip.appendChild(title);strip.appendChild(sub);
+  var fileName=make("div","trackname",isMic?"麥克風尚未開啟":"尚未載入音訊");
+  strip.appendChild(fileName);ch.fileNameEl=fileName;
+  if(!isMic){
+    var input=make("input","fileinput");input.type="file";input.accept="audio/*,.mp3,.wav,.m4a,.aac,.aiff,.ogg";input.id="file"+index;
+    var pick=make("button","filepick","選擇音樂檔");
+    pick.onclick=function(){input.click();};
+    input.onchange=function(){
+      if(!input.files || !input.files[0])return;
+      var f=input.files[0];
+      try{
+        if(ch.audio){ch.audio.pause();if(ch.objectURL)URL.revokeObjectURL(ch.objectURL);}
+        ch.objectURL=URL.createObjectURL(f);
+        ch.audio=new Audio();ch.audio.preload="auto";ch.audio.src=ch.objectURL;ch.audio.loop=false;
+        ch.fileNameEl.textContent=f.name;
+        ch.audio.onended=function(){ch.playing=false;updateState(ch);};
+        ch.audio.onerror=function(){setStatus("無法讀取 "+f.name+"；請改用 MP3、AAC 或 WAV。");};
+        if(audioCtx){setupChannelNodes(ch);try{ch.mediaSource=audioCtx.createMediaElementSource(ch.audio);ch.mediaSource.connect(ch.gainNode);}catch(e){/* Source may already exist */}}
+        ch.stateEl.textContent="已載入";
+        setStatus("已載入："+f.name+"。按 ▶ 播放。");
+      }catch(e){setStatus("載入檔案失敗："+e.message);}
+    };
+    strip.appendChild(input);strip.appendChild(pick);
+    var trans=make("div","transport");
+    var play=make("button","","▶ 播放"),stop=make("button","","■ 停止");
+    play.onclick=function(){playTrack(ch);};stop.onclick=function(){stopTrack(ch);};
+    trans.appendChild(play);trans.appendChild(stop);strip.appendChild(trans);
+    ch.playBtn=play;
+  }else{
+    var micHint=make("div","ch-sub","使用 Safari 麥克風權限");
+    micHint.style.height="auto";strip.appendChild(micHint);
+  }
+  var vu=make("div","vu");var vuFill=make("span");vu.appendChild(vuFill);strip.appendChild(vu);ch.vuFill=vuFill;
+  var db=make("div","db","−∞ dB");strip.appendChild(db);ch.dbEl=db;
+  var faderBox=make("div","faderbox");
+  var fader=make("input","fader");fader.type="range";fader.min="0";fader.max="1.5";fader.step="0.01";fader.value=String(ch.gain);fader.setAttribute("aria-label","音量推桿");
+  fader.oninput=function(){ch.gain=parseFloat(fader.value);if(ch.gainNode)ch.gainNode.gain.value=ch.gain;gainText.textContent=Math.round(ch.gain*100)+"%";};
+  faderBox.appendChild(fader);strip.appendChild(faderBox);
+  var gainText=make("div","gainvalue",Math.round(ch.gain*100)+"%");strip.appendChild(gainText);
+  var panLabel=make("div","panlabel");panLabel.appendChild(make("span","","L"));panLabel.appendChild(make("span","","PAN"));panLabel.appendChild(make("span","","R"));strip.appendChild(panLabel);
+  var pan=make("input","pan");pan.type="range";pan.min="-1";pan.max="1";pan.step="0.05";pan.value=String(ch.pan);
+  pan.oninput=function(){ch.pan=parseFloat(pan.value);if(ch.panNode){if(ch.panNode.pan)ch.panNode.pan.value=ch.pan;else ch.panNode.setPosition(ch.pan,0,1-Math.abs(ch.pan));}};
+  strip.appendChild(pan);
+  var buttons=make("div","buttons");
+  var mute=make("button","","MUTE"),solo=make("button","","SOLO");
+  mute.onclick=function(){ch.mute=!ch.mute;mute.className=ch.mute?"mute-on":"";updateState(ch);applyGains();};
+  solo.onclick=function(){ch.solo=!ch.solo;solo.className=ch.solo?"solo-on":"";updateState(ch);applyGains();};
+  buttons.appendChild(mute);buttons.appendChild(solo);strip.appendChild(buttons);
+  var state=make("div","state",isMic?"MIC OFF":"READY");strip.appendChild(state);
+  ch.stateEl=state;ch.muteBtn=mute;ch.soloBtn=solo;ch.strip=strip;
+  channelRoot.appendChild(strip);
+}
+function buildChannels(){
+  var mic={name:"MIC 1",isMic:true,gain:0.75,pan:0,mute:false,solo:false,nodesReady:false,playing:false};
+  channels.push(mic);makeStrip(mic,0,true);
+  for(var i=1;i<=10;i++){
+    var ch={name:"PLAY "+i,gain:0.75,pan:0,mute:false,solo:false,nodesReady:false,playing:false};
+    channels.push(ch);makeStrip(ch,i,false);
+  }
+}
+function anySolo(){for(var i=0;i<channels.length;i++)if(channels[i].solo)return true;return false;}
+function applyGains(){
+  var solo=anySolo();
+  channels.forEach(function(ch){
+    var audible=!allMuted && !ch.mute && (!solo || ch.solo);
+    if(ch.gainNode)ch.gainNode.gain.value=audible?ch.gain:0;
+  });
+  if(masterNode)masterNode.gain.value=masterGain;
+}
+function updateState(ch){
+  if(ch.isMic)ch.stateEl.textContent=micEnabled?(ch.mute?"MUTED":"MIC ON"):"MIC OFF";
+  else ch.stateEl.textContent=ch.playing?(ch.mute?"播放中 / 靜音":"播放中"):(ch.audio?"已載入":"READY");
+}
+function playTrack(ch){
+  if(!createAudioEngine())return;
+  if(!ch.audio){setStatus("請先為 "+ch.name+" 選擇音樂檔。");return;}
+  if(audioCtx.state==="suspended"&&audioCtx.resume)audioCtx.resume();
+  setupChannelNodes(ch);
+  if(!ch.mediaSource){try{ch.mediaSource=audioCtx.createMediaElementSource(ch.audio);ch.mediaSource.connect(ch.gainNode);}catch(e){}}
+  var p=ch.audio.play();
+  if(p&&p.catch)p.catch(function(e){setStatus("播放未開始："+e.message+"。請再按一次播放。");});
+  ch.playing=true;updateState(ch);setStatus(ch.name+" 播放中。");
+}
+function stopTrack(ch){
+  if(ch.audio){ch.audio.pause();try{ch.audio.currentTime=0;}catch(e){}}
+  ch.playing=false;updateState(ch);
+}
+function updateMeters(){
+  if(masterAnalyser){
+    var arr=new Uint8Array(masterAnalyser.frequencyBinCount);masterAnalyser.getByteTimeDomainData(arr);
+    var sum=0;for(var i=0;i<arr.length;i++){var v=(arr[i]-128)/128;sum+=v*v;}
+    var rms=Math.sqrt(sum/arr.length);masterMeter.style.width=clamp(rms*260,0,100)+"%";
+  }else masterMeter.style.width="0%";
+  channels.forEach(function(ch){
+    var level=0;
+    if(ch.analyser){
+      var a=new Uint8Array(ch.analyser.frequencyBinCount);ch.analyser.getByteTimeDomainData(a);
+      var sum=0;for(var j=0;j<a.length;j++){var x=(a[j]-128)/128;sum+=x*x;}
+      level=Math.sqrt(sum/a.length);
+    }
+    ch.vuFill.style.width=clamp(level*300,0,100)+"%";
+    ch.dbEl.textContent=level>0.0001?(20*Math.log(level)/Math.LN10).toFixed(1)+" dB":"−∞ dB";
+    updateState(ch);
+  });
+  window.requestAnimationFrame(updateMeters);
+}
+document.getElementById("startAudio").onclick=function(){
+  if(createAudioEngine()){
+    if(audioCtx.resume)audioCtx.resume();
+    applyGains();
+  }
+};
+document.getElementById("micButton").onclick=function(){
+  if(micEnabled){disableMic();return;}
+  if(!createAudioEngine())return;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    setStatus("此環境無法使用麥克風。請確認使用 HTTPS 的 Safari，並檢查 iOS 版本權限。");return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false}).then(function(stream){
+    micStream=stream;micSource=audioCtx.createMediaStreamSource(stream);
+    var mic=channels[0];setupChannelNodes(mic);micSource.connect(mic.gainNode);micEnabled=true;
+    document.getElementById("micButton").textContent="關閉 MIC";
+    document.getElementById("micButton").className="active";
+    mic.fileNameEl.textContent="麥克風已連線";updateState(mic);applyGains();
+    setStatus("MIC 已開啟。請注意喇叭回授，建議先使用耳機測試。");
+  }).catch(function(err){setStatus("無法開啟 MIC："+err.message+"。請在 Safari 網站設定允許麥克風。");});
+};
+function disableMic(){
+  if(micStream){micStream.getTracks().forEach(function(t){t.stop();});}
+  micStream=null;micSource=null;micEnabled=false;
+  document.getElementById("micButton").textContent="開啟 MIC";
+  document.getElementById("micButton").className="";
+  channels[0].fileNameEl.textContent="麥克風尚未開啟";updateState(channels[0]);
+  setStatus("MIC 已關閉。");
+}
+document.getElementById("stopAll").onclick=function(){
+  channels.forEach(function(ch){if(!ch.isMic)stopTrack(ch);});
+  setStatus("所有音樂播放已停止。");
+};
+document.getElementById("allMute").onclick=function(){
+  allMuted=!allMuted;this.textContent=allMuted?"解除全部靜音":"全部靜音";this.className=allMuted?"active":"";
+  applyGains();setStatus(allMuted?"全部通道已靜音。":"已解除全部靜音。");
+};
+masterSlider.oninput=function(){
+  masterGain=parseFloat(masterSlider.value);masterText.textContent=Math.round(masterGain*100)+"%";
+  if(masterNode)masterNode.gain.value=masterGain;
+};
+document.addEventListener("visibilitychange",function(){
+  if(document.hidden && audioCtx && audioCtx.state==="running"){
+    setStatus("頁面已切到背景；iOS 可能暫停音訊。返回頁面後如無聲音，請再點「啟動音訊引擎」。");
+  }
+});
+buildChannels();
+window.requestAnimationFrame(updateMeters);
+})();
+</script>
+</body>
+</html>
